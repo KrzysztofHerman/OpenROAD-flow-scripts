@@ -56,7 +56,7 @@ flow/*.met
 flow/*.opennet
 
 # Platforms
-flow/platforms/*
+#flow/platforms/*
 !flow/platforms/asap7
 !flow/platforms/nangate45
 !flow/platforms/sky130hd
