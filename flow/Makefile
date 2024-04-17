@@ -95,7 +95,6 @@
 # DESIGN_CONFIG=./designs/gf180/riscv32i/config.mk
 # DESIGN_CONFIG=./designs/gf180/uart-blocks/config.mk
 
-DESIGN_CONFIG=./designs/ihp-sg13g2/ttsimon/config.mk
 #DESIGN_CONFIG=./designs/ihp-sg13g2/aes/config.mk
 #DESIGN_CONFIG=./designs/ihp-sg13g2/ibex/config.mk
 #DESIGN_CONFIG=./designs/ihp-sg13g2/gcd/config.mk
@@ -103,7 +102,7 @@ DESIGN_CONFIG=./designs/ihp-sg13g2/ttsimon/config.mk
 #DESIGN_CONFIG=./designs/ihp-sg13g2/riscv32i/config.mk
 
 # Default design
-#DESIGN_CONFIG ?= ./designs/nangate45/gcd/config.mk
+DESIGN_CONFIG ?= ./designs/nangate45/gcd/config.mk
 
 # Default TNS_END_PERCENT value
 export TNS_END_PERCENT ?=5
