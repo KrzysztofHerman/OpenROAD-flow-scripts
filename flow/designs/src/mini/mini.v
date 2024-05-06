@@ -10,7 +10,7 @@ module mini
   inout  wire xIn3_pad,
   inout  wire yOut1_pad,
   inout  wire yOut2_pad,
-  inout  wire zInOut1_pad,
+  inout  wire zInOut1_pad
 );
 
 wire rst;
