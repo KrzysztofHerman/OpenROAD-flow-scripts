@@ -30,10 +30,10 @@ export SEAL_GDS = ./designs/$(PLATFORM)/$(DESIGN_NICKNAME)/sealring_1870x1870.gd
 # Margin for core power ring: 80um
 # Total margin to core area: 330um
 # Core site: 0.48 x 3.78
-#export DIE_AREA = 0 0 1865.28 1867.32
-#export CORE_AREA = 330.24 332.64 1535.04 1534.68
-export DIE_AREA = 0 0 510 510
-export CORE_AREA = 20.160 22.68 490 490
+export DIE_AREA = 0 0 1865.28 1867.32
+export CORE_AREA = 330.24 332.64 1535.04 1534.68
+#export DIE_AREA = 0 0 510 510
+#export CORE_AREA = 20.160 22.68 490 490
 
 # Allow routing on the TopMetal layers
 export MAX_ROUTING_LAYER = TopMetal2

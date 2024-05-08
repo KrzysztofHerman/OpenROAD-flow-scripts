@@ -12,6 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// type: Corner
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Corner ();
+endmodule
+`endcelldefine
+
+// type: Filler200
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Filler200 ();
+endmodule
+`endcelldefine
+
+// type: Filler400
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Filler400 ();
+endmodule
+`endcelldefine
+
+// type: Filler1000
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Filler1000 ();
+endmodule
+`endcelldefine
+
+// type: Filler2000
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Filler2000 ();
+endmodule
+`endcelldefine
+
+// type: Filler4000
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Filler4000 ();
+endmodule
+`endcelldefine
+
+// type: Filler10000
+`timescale 1ns/10ps
+`celldefine
+module sg13g2_Filler10000 ();
+endmodule
+`endcelldefine
 // type: Input
 `timescale 1ns/10ps
 `celldefine
@@ -219,31 +267,27 @@ endmodule
 // type: IOVss
 `timescale 1ns/10ps
 `celldefine
-module sg13g2_IOPadIOVss (pad);
-	inout pad;
+module sg13g2_IOPadIOVss ();
 endmodule
 `endcelldefine
 
 // type: IOVdd
 `timescale 1ns/10ps
 `celldefine
-module sg13g2_IOPadIOVdd (pad);
-	inout pad;
+module sg13g2_IOPadIOVdd ();
 endmodule
 `endcelldefine
 
 // type: Vss
 `timescale 1ns/10ps
 `celldefine
-module sg13g2_IOPadVss (pad);
-	inout pad;
+module sg13g2_IOPadVss ();
 endmodule
 `endcelldefine
 
 // type: Vdd
 `timescale 1ns/10ps
 `celldefine
-module sg13g2_IOPadVdd (pad);
-	inout pad;
+module sg13g2_IOPadVdd ();
 endmodule
 `endcelldefine

@@ -1,4 +1,10 @@
-VERSION 5.8 ;
+VERSION 5.7 ;
+
+SITE sg13g2_ioSite
+    CLASS PAD ;
+    SYMMETRY R90 ;
+    SIZE 1.00 BY 180.00 ;
+END sg13g2_ioSite
 
 MACRO bondpad_70x70
   CLASS COVER ;

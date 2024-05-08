@@ -1,7 +1,7 @@
 current_design  mini
 
-set clk_name  clk
-set clk_port_name clk
+set clk_name  clk_pad
+set clk_port_name clk_pad
 set clk_period 10.4
 set clk_io_pct 0.2
 
