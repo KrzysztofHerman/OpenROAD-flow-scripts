@@ -35,8 +35,8 @@ def download_github_file(repo_owner, repo_name, branch, file_path, local_dir):
     
     print(f"File saved to {local_file_path}")
 
-#owner= 'IHP-GmbH'
-owner= 'KrzysztofHerman'
+owner= 'IHP-GmbH'
+#owner= 'KrzysztofHerman'
 repo_name= 'IHP-Open-PDK'
 branch = 'dev'
 
@@ -52,7 +52,12 @@ download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_stdce
 download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib', 'lib')
 download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p50V_25C.lib', 'lib')
 # wait for official update 
-download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_io_dummy.lib', 'lib')
+download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_iocell_typ_1p2V_3p3V_25C.lib', 'lib')
+download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_iocell_typ_1p5V_3p3V_25C.lib', 'lib')
+download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_iocell_fast_1p32V_3p6V_m40C.lib', 'lib')
+download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_iocell_fast_1p65V_3p6V_m40C.lib', 'lib')
+download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_iocell_slow_1p08V_3p0V_125C.lib', 'lib')
+download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/liberty/sg13g2_iocell_slow_1p35V_3p0V_125C.lib', 'lib')
 # GDS
 download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_stdcell/gds/sg13g2_stdcell.gds', 'gds')
 download_github_file(owner, repo_name, branch, 'ihp-sg13g2/libs.ref/sg13g2_io/gds/sg13g2_io.gds', 'gds')

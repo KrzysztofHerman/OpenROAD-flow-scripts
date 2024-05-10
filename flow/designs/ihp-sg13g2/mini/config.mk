@@ -6,7 +6,7 @@ export VERILOG_FILES = ./designs/src/$(DESIGN_NICKNAME)/mini.v \
 	./platforms/$(PLATFORM)/verilog/sg13g2_io.v
 
 export ADDITIONAL_LIBS = \
-	./platforms/$(PLATFORM)/lib/sg13g2_io_dummy.lib
+	./platforms/$(PLATFORM)/lib/sg13g2_iocell_typ_1p5V_3p3V_25C.lib
 
 export ADDITIONAL_LEFS = ./platforms/$(PLATFORM)/lef/bondpad_70x70.lef \
 	./platforms/$(PLATFORM)/lef/sg13g2_io.lef
