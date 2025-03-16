@@ -2,8 +2,8 @@ export DESIGN_NICKNAME = vanilla5
 export DESIGN_NAME = bsg_manycore_tile
 export PLATFORM    = tsmc65lp
 
-export VERILOG_FILES = ./designs/src/$(DESIGN_NICKNAME)/bsg_manycore_tile.sv2v.v
-export SDC_FILE      = ./designs/$(PLATFORM)/$(DESIGN_NICKNAME)/constraint.sdc
+export VERILOG_FILES = $(DESIGN_HOME)/src/$(DESIGN_NICKNAME)/bsg_manycore_tile.sv2v.v
+export SDC_FILE      = $(DESIGN_HOME)/$(PLATFORM)/$(DESIGN_NICKNAME)/constraint.sdc
 
 export ADDITIONAL_LEFS = $(PLATFORM_DIR)/lef/tsmc65lp_1rf_lg10_w32_all.lef \
                          $(PLATFORM_DIR)/lef/tsmc65lp_2rf_lg5_w32_all.lef \
@@ -17,7 +17,6 @@ export ADDITIONAL_GDS  = $(PLATFORM_DIR)/gds/tsmc65lp_1rf_lg10_w32_all.gds2 \
 
 export SYNTH_HIERARCHICAL = 1
 
-export RTLMP_FLOW = True
 
 # These values must be multiples of placement site
 export DIE_AREA    = 0 0 1100 400.8

@@ -4,7 +4,7 @@ export DESIGN_NAME            = Element
 export DESIGN_NICKNAME        = mock-array_Element
 
 export VERILOG_FILES          = designs/src/mock-array/*.v
-export SDC_FILE               = designs/asap7/mock-array/Element/constraints.sdc
+export SDC_FILE               = designs/asap7/mock-array/constraints.sdc
 
 export PLATFORM               = asap7
 
@@ -26,20 +26,19 @@ export IO_CONSTRAINTS         = designs/asap7/mock-array/Element/io.tcl
 
 export PDN_TCL                = $(FLOW_HOME)/platforms/asap7/openRoad/pdn/BLOCK_grid_strategy.tcl
 
-# If this design isn't quickly done in detailed routing, something is wrong.
-# At time of adding this option, only 3 iterations were needed for 0
-# violations.
-export DETAILED_ROUTE_ARGS=-bottom_routing_layer M2 -top_routing_layer M5 -save_guide_updates -verbose 1 -droute_end_iter 10
+# Detailed routing should be easy, limit iterations
+export DETAILED_ROUTE_END_ITERATION ?= 6
 
-export MOCK_ARRAY_ROWS        = $(word 1, $(MOCK_ARRAY_TABLE))
-export MOCK_ARRAY_COLS        = $(word 2, $(MOCK_ARRAY_TABLE))
-
-# since we are specifying DETAILED_ROUTE_ARGS, we need to communicate the
-# same information to other stages in the flow.
 export MIN_ROUTING_LAYER = M2
+# M5 is the top PDN layer, so don't exceed that.
 export MAX_ROUTING_LAYER = M5
+
+export IO_PLACER_H=M2 M4
+export IO_PLACER_V=M3 M5
 
 export PLACE_PINS_ARGS = -annealing
 
 export GND_NETS_VOLTAGES      =
 export PWR_NETS_VOLTAGES      =
+
+export ADDITIONAL_FILES = designs/src/mock-array/util.tcl

@@ -1,3 +1,10 @@
+source $::env(SCRIPTS_DIR)/util.tcl
+
+source $::env(SCRIPTS_DIR)/report_metrics.tcl
+
+# Temporarily disable sta's threading due to random failures
+sta::set_thread_count 1
+
 proc load_design {design_file sdc_file} {
   # Read liberty files
   source $::env(SCRIPTS_DIR)/read_liberty.tcl
@@ -7,7 +14,7 @@ proc load_design {design_file sdc_file} {
   if {$ext == ".v"} {
     read_lef $::env(TECH_LEF)
     read_lef $::env(SC_LEF)
-    if {[info exist ::env(ADDITIONAL_LEFS)]} {
+    if {[env_var_exists_and_non_empty ADDITIONAL_LEFS]} {
       foreach lef $::env(ADDITIONAL_LEFS) {
         read_lef $lef
       }
@@ -28,6 +35,11 @@ proc load_design {design_file sdc_file} {
   }
 
   source $::env(PLATFORM_DIR)/setRC.tcl
+
+  if { [env_var_equals LIB_MODEL CCS] } {
+    puts "Using CCS delay calculation"
+    set_delay_calculator prima
+  }
 }
 
 #===========================================================================================
@@ -39,13 +51,13 @@ proc get_verilog_cells_for_design { } {
 }
 
 proc write_eqy_verilog {filename} {
-    # Filter out cells with no verilog/not needed for equivalence such
-    # as fillers and tap cells 
-    if {[info exist ::env(REMOVE_CELLS_FOR_EQY)]} {
-	write_verilog -remove_cells $::env(REMOVE_CELLS_FOR_EQY) $::env(RESULTS_DIR)/$filename
-    } else {
-	write_verilog  $::env(RESULTS_DIR)/$filename
-    }
+  # Filter out cells with no verilog/not needed for equivalence such
+  # as fillers and tap cells
+  if {[env_var_exists_and_non_empty REMOVE_CELLS_FOR_EQY]} {
+    write_verilog -remove_cells $::env(REMOVE_CELLS_FOR_EQY) $::env(RESULTS_DIR)/$filename
+  } else {
+    write_verilog  $::env(RESULTS_DIR)/$filename
+  }
 }
 
 proc write_eqy_script_for_sky130hd {} {
@@ -113,14 +125,4 @@ proc run_equivalence_test {} {
     } else {
       puts "Repair timing output passed equivalence test"
     }
-}
-
-proc append_env_var {list_name var_name prefix has_arg} {
-  upvar $list_name list
-  if {[info exist ::env($var_name)]} {
-    lappend list $prefix
-    if {$has_arg} {
-      lappend list $::env($var_name)
-    }
-  }
 }
