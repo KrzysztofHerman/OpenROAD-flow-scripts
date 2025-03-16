@@ -24,13 +24,13 @@ export GDS_FILES                              = $(wildcard $(PLATFORM_DIR)/gds/$
 export DONT_USE_CELLS                         = *_1
 
 # Fill cells used in fill cell insertion
-export FILL_CELLS                             = gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_64 \
-                                                gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_32 \
-                                                gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_16 \
-                                                gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_8 \
-                                                gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_4 \
-                                                gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_2 \
-                                                gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_1
+export FILL_CELLS                             ?= gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_64 \
+                                                 gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_32 \
+                                                 gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_16 \
+                                                 gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_8 \
+                                                 gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_4 \
+                                                 gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_2 \
+                                                 gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__fill_1
 
 export TIE_CELL                               = gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__filltie
 export ENDCAP_CELL                            = gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__endcap
@@ -84,17 +84,7 @@ export MACRO_PLACE_CHANNEL                   ?= 20.16 20.16
 #---------------------------------------------------------
 # Place
 #--------------------------------------------------------
-# Cell padding in SITE widths to ease rout-ability.  Applied to both sides
-export CELL_PAD_IN_SITES_GLOBAL_PLACEMENT    ?= 2
-export CELL_PAD_IN_SITES_DETAIL_PLACEMENT    ?= 1
-
-# global placement density
 export PLACE_DENSITY                         ?= 0.40
-
-#--------------------------------------------------------
-# CTS
-#--------------------------------------------------------
-export CTS_BUF_CELL                           = gf180mcu_fd_sc_mcu$(TRACK_OPTION)$(POWER_OPTION)__clkbuf_8
 
 #---------------------------------------------------------
 # Route
@@ -103,6 +93,9 @@ export CTS_BUF_CELL                           = gf180mcu_fd_sc_mcu$(TRACK_OPTION
 export MIN_ROUTING_LAYER                     ?= Metal2
 export MAX_ROUTING_LAYER                     ?= Metal5
 export DISABLE_VIA_GEN                       ?= 1
+
+# Define fastRoute tcl
+export FASTROUTE_TCL ?= $(PLATFORM_DIR)/fastroute.tcl
 
 # KLayout layer properties
 export KLAYOUT_TECH_FILE                      = $(PLATFORM_DIR)/KLayout/gf180mcu_$(METAL_OPTION)_$(KVALUE)K_$(TRACK_OPTION).lyt

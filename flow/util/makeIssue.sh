@@ -18,6 +18,7 @@ ISSUE_CP_DESIGN_FILE_VARS="SDC_FILE \
 ISSUE_CP_PLATFORM_FILE_VARS="LIB_FILES \
                              SC_LEF \
                              TECH_LEF \
+                             ADDITIONAL_FILES \
                              ADDITIONAL_LEFS \
                              CLKGATE_MAP_FILE \
                              ADDER_MAP_FILE \
@@ -40,10 +41,12 @@ ISSUE_CP_FILE_VARS=$ISSUE_CP_DESIGN_FILE_VARS
 ISSUE_CP_FILES_PLATFORM=""
 if [[ ! -v EXCLUDE_PLATFORM ]]; then
     ISSUE_CP_FILE_VARS+=$ISSUE_CP_PLATFORM_FILE_VARS
-    if [[ -e $PLATFORM_DIR/*.cfg ]]; then
-        ISSUE_CP_FILES_PLATFORM="$PLATFORM_DIR/*.tcl $PLATFORM_DIR/*.cfg"
-    else
-        ISSUE_CP_FILES_PLATFORM="$PLATFORM_DIR/*.tcl"
+    ISSUE_CP_FILES_PLATFORM="$PLATFORM_DIR/*.tcl"
+    if ls $PLATFORM_DIR/*.sdc 1> /dev/null 2>&1; then
+        ISSUE_CP_FILES_PLATFORM="$ISSUE_CP_FILES_PLATFORM $PLATFORM_DIR/*.sdc"
+    fi
+    if ls $PLATFORM_DIR/*.cfg 1> /dev/null 2>&1; then
+        ISSUE_CP_FILES_PLATFORM="$ISSUE_CP_FILES_PLATFORM $PLATFORM_DIR/*.cfg"
     fi
 fi
 
@@ -64,7 +67,6 @@ ISSUE_CP_FILES+="${ISSUE_CP_FILES_PLATFORM} \
     $VARS_BASENAME.tcl \
     $VARS_BASENAME.gdb"
 
-echo "Creating ${RUN_ME_SCRIPT} script"
 cat > ${RUN_ME_SCRIPT} <<EOF
 #!/usr/bin/env bash
 source ${VARS_BASENAME}.sh
@@ -76,7 +78,6 @@ fi
 EOF
 chmod +x ${RUN_ME_SCRIPT}
 
-echo "Creating ${VARS_BASENAME}.sh/tcl script"
 rm -f ${VARS_BASENAME}.sh ${VARS_BASENAME}.tcl ${VARS_BASENAME}.gdb || true
 
 $DIR/generate-vars.sh ${VARS_BASENAME}
@@ -95,10 +96,9 @@ echo "Using $COMPRESS to compress tar file"
 if [ -v FULL_ISSUE ]; then
     DESIGN_PLATFORM_FILES="$DESIGN_DIR $PLATFORM_DIR"
 else
-    DESIGN_PLATFORM_FILES="$DESIGN_DIR/config.mk $PLATFORM_DIR/config.mk"
+    DESIGN_PLATFORM_FILES="$DESIGN_CONFIG $PLATFORM_DIR/config.mk"
 fi
 
-set -x
 tar --use-compress-program=${COMPRESS} \
     --ignore-failed-read -chf $1_${ISSUE_TAG}.tar.gz \
     --transform="s|^|$1_${ISSUE_TAG}/|S" \

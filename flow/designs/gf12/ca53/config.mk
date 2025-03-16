@@ -1,7 +1,6 @@
 export DESIGN_NAME = ca53_cpu
 export PLATFORM    = gf12
 
-export RTLMP_FLOW = True
 
 export VERILOG_FILES  = $(PLATFORM_DIR)/$(DESIGN_NAME)/rtl/ca53_cpu.v
 export CACHED_NETLIST = $(PLATFORM_DIR)/$(DESIGN_NAME)/rtl/ca53_cpu.v
@@ -49,7 +48,6 @@ export DIE_AREA    = 0 0 1400 1400
 export CORE_AREA   = 10 10 1390 1390 
 export PLACE_DENSITY_LB_ADDON = 0.05
 
-export HAS_IO_CONSTRAINTS = 1
 export PLACE_PINS_ARGS = -exclude left:0-600 -exclude left:1350-1400 -exclude right:* -exclude top:* -exclude bottom:*
 
 export MACRO_PLACE_HALO = 7 7
@@ -60,11 +58,12 @@ export MACRO_WRAPPERS = $(dir $(DESIGN_CONFIG))/wrappers.tcl
 #export MAX_ROUTING_LAYER = H2 
 export FASTROUTE_TCL = $(dir $(DESIGN_CONFIG))/fastroute.tcl
 #
-ifneq ($(USE_FILL),)
+ifeq ($(USE_FILL),1)
 export DESIGN_TYPE = CELL
 else
 export DESIGN_TYPE = CELL_NODEN
 endif
 
-export SKIP_PIN_SWAP          = 1
+#export SKIP_PIN_SWAP          = 1
 export SKIP_INCREMENTAL_REPAIR = 1
+export TNS_END_PERCENT = 5

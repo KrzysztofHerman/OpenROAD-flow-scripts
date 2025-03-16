@@ -1,6 +1,35 @@
 utl::set_metrics_stage "floorplan__{}"
 source $::env(SCRIPTS_DIR)/load.tcl
+erase_non_stage_variables floorplan
 load_design 1_synth.v 1_synth.sdc
+
+proc report_unused_masters {} {
+  set db [ord::get_db]
+  set libs [$db getLibs]
+  set masters ""
+  foreach lib $libs {
+    foreach master [$lib getMasters] {
+      # filter out non-block masters, or you can remove this conditional to detect any unused master
+      if {[$master getType] == "BLOCK"} {
+        lappend masters $master
+      }
+    }
+  }
+
+  set block [ord::get_db_block]
+  set insts [$block getInsts]
+
+  foreach inst $insts {
+    set inst_master [$inst getMaster]
+    set masters [lsearch -all -not -inline $masters $inst_master]
+  }
+
+  foreach master $masters {
+    puts "Master [$master getName] is loaded but not used in the design"
+  }
+}
+
+report_unused_masters
 
 #Run check_setup
 puts "\n=========================================================================="
@@ -12,55 +41,58 @@ set num_instances [llength [get_cells -hier *]]
 puts "number instances in verilog is $num_instances"
 
 set additional_args ""
-if { [info exists ::env(ADDITIONAL_SITES)]} {
-  append additional_args " -additional_sites $::env(ADDITIONAL_SITES)"
+append_env_var additional_args ADDITIONAL_SITES -additional_sites 1
+
+set use_floorplan_def [env_var_exists_and_non_empty FLOORPLAN_DEF]
+set use_footprint [env_var_exists_and_non_empty FOOTPRINT]
+set use_die_and_core_area [expr {[env_var_exists_and_non_empty DIE_AREA] && [env_var_exists_and_non_empty CORE_AREA]}]
+set use_core_utilization [env_var_exists_and_non_empty CORE_UTILIZATION]
+
+set methods_defined [expr {$use_floorplan_def + $use_footprint + $use_die_and_core_area + $use_core_utilization}]
+if {$methods_defined > 1} {
+    puts "ERROR: Floorplan initialization methods are mutually exclusive, pick one."
+    exit 1
 }
 
-# Initialize floorplan by reading in floorplan DEF
-# ---------------------------------------------------------------------------
-if {[info exists ::env(FLOORPLAN_DEF)]} {
+if {$use_floorplan_def} {
+    # Initialize floorplan by reading in floorplan DEF
     puts "Read in Floorplan DEF to initialize floorplan:  $env(FLOORPLAN_DEF)"
     read_def -floorplan_initialize $env(FLOORPLAN_DEF)
-# Initialize floorplan using ICeWall FOOTPRINT
-# ----------------------------------------------------------------------------
-} elseif {[info exists ::env(FOOTPRINT)]} {
+} elseif {$use_footprint} {
+    # Initialize floorplan using ICeWall FOOTPRINT
+    ICeWall load_footprint $env(FOOTPRINT)
 
-  ICeWall load_footprint $env(FOOTPRINT)
+    initialize_floorplan \
+        -die_area  [ICeWall get_die_area] \
+        -core_area [ICeWall get_core_area] \
+        -site      $::env(PLACE_SITE)
 
-  initialize_floorplan \
-    -die_area  [ICeWall get_die_area] \
-    -core_area [ICeWall get_core_area] \
-    -site      $::env(PLACE_SITE)
-
-  ICeWall init_footprint $env(SIG_MAP_FILE)
-
-# Initialize floorplan using CORE_UTILIZATION
-# ----------------------------------------------------------------------------
-} elseif {[info exists ::env(CORE_UTILIZATION)] && $::env(CORE_UTILIZATION) != "" } {
-  set aspect_ratio 1.0
-  if {[info exists ::env(CORE_ASPECT_RATIO)] && $::env(CORE_ASPECT_RATIO) != ""} {
-    set aspect_ratio $::env(CORE_ASPECT_RATIO)
-  }
-  set core_margin 1.0
-  if {[info exists ::env(CORE_MARGIN)] && $::env(CORE_MARGIN) != ""} {
-    set core_margin $::env(CORE_MARGIN)
-  }
-  initialize_floorplan -utilization $::env(CORE_UTILIZATION) \
-                       -aspect_ratio $aspect_ratio \
-                       -core_space $core_margin \
-                       -site $::env(PLACE_SITE) \
-                       {*}$additional_args
-
-# Initialize floorplan using DIE_AREA/CORE_AREA
-# ----------------------------------------------------------------------------
+    ICeWall init_footprint $env(SIG_MAP_FILE)
+} elseif {$use_die_and_core_area} {
+    initialize_floorplan -die_area $::env(DIE_AREA) \
+                         -core_area $::env(CORE_AREA) \
+                         -site $::env(PLACE_SITE) \
+                         {*}$additional_args
+} elseif {$use_core_utilization} {
+    set aspect_ratio 1.0
+    if {[env_var_exists_and_non_empty "CORE_ASPECT_RATIO"]} {
+        set aspect_ratio $::env(CORE_ASPECT_RATIO)
+    }
+    set core_margin 1.0
+    if {[env_var_exists_and_non_empty "CORE_MARGIN"]} {
+        set core_margin $::env(CORE_MARGIN)
+    }
+    initialize_floorplan -utilization $::env(CORE_UTILIZATION) \
+                         -aspect_ratio $aspect_ratio \
+                         -core_space $core_margin \
+                         -site $::env(PLACE_SITE) \
+                         {*}$additional_args
 } else {
-  initialize_floorplan -die_area $::env(DIE_AREA) \
-                       -core_area $::env(CORE_AREA) \
-                       -site $::env(PLACE_SITE) \
-                       {*}$additional_args
+    puts "ERROR: No floorplan initialization method specified"
+    exit 1
 }
 
-if { [info exists ::env(MAKE_TRACKS)] } {
+if { [env_var_exists_and_non_empty MAKE_TRACKS] } {
   source $::env(MAKE_TRACKS)
 } elseif {[file exists $::env(PLATFORM_DIR)/make_tracks.tcl]} {
   source $::env(PLATFORM_DIR)/make_tracks.tcl
@@ -68,17 +100,21 @@ if { [info exists ::env(MAKE_TRACKS)] } {
   make_tracks
 }
 
-if {[info exists ::env(FOOTPRINT_TCL)]} {
+if {[env_var_exists_and_non_empty FOOTPRINT_TCL]} {
   source $::env(FOOTPRINT_TCL)
 }
 
-# remove buffers inserted by yosys/abc
-remove_buffers
+if { [env_var_equals REMOVE_ABC_BUFFERS 1] } {
+  # remove buffers inserted by yosys/abc
+  remove_buffers
+} else {
+  repair_timing_helper 0
+}
 
 ##### Restructure for timing #########
-if { [info exist ::env(RESYNTH_TIMING_RECOVER)] && $::env(RESYNTH_TIMING_RECOVER) == 1 } {
-  repair_design
-  repair_timing
+if { [env_var_equals RESYNTH_TIMING_RECOVER 1] } {
+  repair_design_helper
+  repair_timing_helper
   # pre restructure area/timing report (ideal clocks)
   puts "Post synth-opt area"
   report_design_area
@@ -97,8 +133,8 @@ if { [info exist ::env(RESYNTH_TIMING_RECOVER)] && $::env(RESYNTH_TIMING_RECOVER
 
   # post restructure area/timing report (ideal clocks)
   remove_buffers
-  repair_design
-  repair_timing
+  repair_design_helper
+  repair_timing_helper
 
   puts "Post restructure-opt wns"
   report_worst_slack -max -digits 3
@@ -113,10 +149,9 @@ if { [info exist ::env(RESYNTH_TIMING_RECOVER)] && $::env(RESYNTH_TIMING_RECOVER
 puts "Default units for flow"
 report_units
 report_units_metric
-source $::env(SCRIPTS_DIR)/report_metrics.tcl
 report_metrics 2 "floorplan final" false false
 
-if { [info exist ::env(RESYNTH_AREA_RECOVER)] && $::env(RESYNTH_AREA_RECOVER) == 1 } {
+if { [env_var_equals RESYNTH_AREA_RECOVER 1] } {
 
   utl::push_metrics_stage "floorplan__{}__pre_restruct"
   set num_instances [llength [get_cells -hier *]]
@@ -154,12 +189,9 @@ if { [info exist ::env(RESYNTH_AREA_RECOVER)] && $::env(RESYNTH_AREA_RECOVER) ==
   utl::pop_metrics_stage
 }
 
-if { [info exists ::env(POST_FLOORPLAN_TCL)] } {
+if { [env_var_exists_and_non_empty POST_FLOORPLAN_TCL] } {
   source $::env(POST_FLOORPLAN_TCL)
 }
 
-if {[info exists ::env(GALLERY_REPORT)]  && $::env(GALLERY_REPORT) != 0} {
-  write_def $::env(RESULTS_DIR)/2_1_floorplan.def
-}
 write_db $::env(RESULTS_DIR)/2_1_floorplan.odb
-write_sdc -no_timestamp $::env(RESULTS_DIR)/2_floorplan.sdc
+write_sdc -no_timestamp $::env(RESULTS_DIR)/2_1_floorplan.sdc

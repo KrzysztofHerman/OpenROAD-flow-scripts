@@ -7,18 +7,13 @@ proc report_puts { out } {
 }
 
 proc report_metrics { stage when {include_erc true} {include_clock_skew true} } {
-  if {[info exists ::env(SKIP_REPORT_METRICS)] && $::env(SKIP_REPORT_METRICS) == 1} {
+  if {[env_var_equals SKIP_REPORT_METRICS 1]} {
     return
   }
   puts "Report metrics stage $stage, $when..."
   set filename $::env(REPORTS_DIR)/${stage}_[string map {" " "_"} $when].rpt
   set fileId [open $filename w]
   close $fileId
-  report_puts "\n=========================================================================="
-  report_puts "$when check_setup"
-  report_puts "--------------------------------------------------------------------------"
-  report_puts [check_setup]
-
   report_puts "\n=========================================================================="
   report_puts "$when report_tns"
   report_puts "--------------------------------------------------------------------------"
@@ -36,7 +31,7 @@ proc report_metrics { stage when {include_erc true} {include_clock_skew true} } 
   report_worst_slack >> $filename
   report_worst_slack_metric >> $filename
 
-  if {$include_clock_skew} {
+  if {$include_clock_skew && $::env(REPORT_CLOCK_SKEW)} {
     report_puts "\n=========================================================================="
     report_puts "$when report_clock_skew"
     report_puts "--------------------------------------------------------------------------"
@@ -218,7 +213,7 @@ proc report_metrics { stage when {include_erc true} {include_clock_skew true} } 
   report_puts "\n=========================================================================="
   report_puts "$when report_power"
   report_puts "--------------------------------------------------------------------------"
-  if {[info exists ::env(CORNERS)]} {
+  if {[env_var_exists_and_non_empty CORNERS]} {
     foreach corner $::env(CORNERS) {
       report_puts "Corner: $corner"
       report_power -corner $corner >> $filename
