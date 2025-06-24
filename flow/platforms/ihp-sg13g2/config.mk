@@ -4,26 +4,21 @@ export PROCESS = ihp-sg13g2
 #-----------------------------------------------------
 # Tech/Libs
 # ----------------------------------------------------
-export TECH_LEF = $(PLATFORM_DIR)/lef/sg13g2_tech.lef
-export SC_LEF = $(PLATFORM_DIR)/lef/sg13g2_stdcell.lef
+export TECH_LEF = $(PDK_ROOT)/$(PDK)/libs.ref/sg13g2_stdcell/lef/sg13g2_tech.lef
+export SC_LEF =   $(PDK_ROOT)/$(PDK)/libs.ref/sg13g2_stdcell/lef/sg13g2_stdcell.lef
 
-export LIB_FILES = $(PLATFORM_DIR)/lib/sg13g2_stdcell_typ_1p20V_25C.lib \
+export LIB_FILES = $(PDK_ROOT)/$(PDK)/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib \
 	                  $(ADDITIONAL_LIBS)
-export GDS_FILES = $(PLATFORM_DIR)/gds/sg13g2_stdcell.gds \
+export GDS_FILES = $(PDK_ROOT)/$(PDK)/libs.ref/sg13g2_stdcell/gds/sg13g2_stdcell.gds \
 	                  $(ADDITIONAL_GDS)
 
 # Dont use cells to ease congestion
-# Specify at least one filler cell if none
-
-# The *probe* are for inserting probe points and have metal shapes
-# on all layers.
-# *lpflow* cells are for multi-power domains
 export DONT_USE_CELLS += \
-sg13g2_antennanp \
 sg13g2_lgcp_1 \
 sg13g2_sighold \
 sg13g2_slgcp_1 \
-sg13g2_dfrbp_2 
+sg13g2_sdfbbp_1 \
+sg13g2_dfrbp_2
 
 
 # Define fill cells
@@ -57,8 +52,8 @@ export ABC_CLOCK_PERIOD_IN_PS ?= $(shell sed -nE "s/^set clk_period (.+)|.* -per
 export PLACE_SITE = CoreSite
 
 # IO Placer pin layers
-export IO_PLACER_H = Metal2
-export IO_PLACER_V = Metal3
+export IO_PLACER_H = Metal3
+export IO_PLACER_V = Metal2
 
 # Define default PDN config
 export PDN_TCL ?= $(PLATFORM_DIR)/pdn.tcl
@@ -92,7 +87,9 @@ export MAX_ROUTING_LAYER 		?= Metal5
 export FASTROUTE_TCL ?= $(PLATFORM_DIR)/fastroute.tcl
 
 # KLayout technology file
-export KLAYOUT_TECH_FILE = $(PLATFORM_DIR)/sg13g2.lyt
+export KLAYOUT_TECH_FILE =  $(PDK_ROOT)/$(PDK)/libs.tech/klayout/tech/sg13g2.lyt
+export GDS_LAYER_MAP =  $(PDK_ROOT)/$(PDK)/libs.tech/klayout/tech/sg13g2.map
+#export KLAYOUT_TECH_FILE =  $(PLATFORM_DIR)/sg13g2.lyt
 #
 # Rules for metal fill
 export FILL_CONFIG = $(PLATFORM_DIR)/fill.json
@@ -114,8 +111,8 @@ export GND_NETS_VOLTAGES  ?= "VSS 0.0"
 export IR_DROP_LAYER ?= Metal1
 
 # DRC Check
-export KLAYOUT_DRC_FILE = $(PLATFORM_DIR)/drc/sg13g2.lydrc
+export KLAYOUT_DRC_FILE = $(PDK_ROOT)/$(PDK)/libs.tech/klayout/tech/drc/sg13g2_maximal.lydrc
 
 #LVS Check
-export CDL_FILE = $(PLATFORM_DIR)/cdl/sg13g2_stdcell.cdl
-#export KLAYOUT_LVS_FILE = $(PLATFORM_DIR)/lvs/$(PLATFORM).lylvs
+export CDL_FILE =  $(PDK_ROOT)/$(PDK)/libs.ref/sg13g2_stdcell/cdl/sg13g2_stdcell.cdl
+export KLAYOUT_LVS_FILE = $(PDK_ROOT)/$(PDK)/libs.tech/klayout/tech/lvs/sg13g2_full.lylvs
